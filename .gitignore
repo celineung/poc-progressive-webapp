@@ -1,0 +1,8 @@
+*.iml
+*.iws
+*.eml
+*.tmp
+.DS_Store
+node_modules/
+js/reveal.min.js
+dist/

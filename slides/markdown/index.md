@@ -38,5 +38,44 @@
 - **safe** : utiliser HTTPS
 - **installable** : possibilité de rajouter l'application sur l'écran d'accueil
 
-> progressive web app
+> \# progressive web app \#
 <!-- .element: class="fragment" data-fragment-index="1" -->
+
+---
+
+## App shell
+
+![App shell](images/app-shell.png)
+<!-- .element: height="500px" -->
+
+---
+
+## [TP] app shell
+
+> **objectif**: injecter les données de news
+
+---
+
+## Service worker : introduction
+
+- permet de rendre l'application web disponible offline
+- script chargé en parallèle des scripts de notre application
+- joue le rôle de proxy
+- utiliser HTTPS
+
+---
+
+## Service worker : cycle de vie
+
+
+to do schéma
+
+---
+
+## [TP] Service worker
+
+> **objectif**: réduire le temps de chargement du app-shell
+
+1. enregistrer un service worker
+2. charger les fichiers nécéssaires au app shell
+3. charger le app-shell depuis le cache

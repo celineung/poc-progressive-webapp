@@ -36,6 +36,7 @@
         if (request.status === 200) {
           var response = JSON.parse(request.response);
           var results = response.query.results;
+          // results = initialNews;
           results.created = response.query.created;
           app.visibleCards = [];
           app.dateContainer.querySelector('.date-last-refresh').textContent = (new Date(results.created)).toLocaleDateString("en-GB", dateOptions);
@@ -45,7 +46,8 @@
         }
       } else {
         // Return the initial weather forecast since no data is available.
-        //app.updateForecastCard(initialWeatherForecast);
+        //app.updateNewsCards(initialNews.item[0]);
+        //app.updateNewsCards(initialNews.item[1]);
       }
     };
     request.open('GET', url);

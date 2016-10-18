@@ -9,7 +9,6 @@
     "gulp": "^3.9.0",
     "gulp-autoprefixer": "^3.1.0",
     "gulp-babel": "^6.0.0",
-    "gulp-cache": "0.2.2",
     "gulp-concat": "^2.5.2",
     "gulp-cssnano": "^2.0.0",
     "gulp-eslint": "^1.0.0",
@@ -25,7 +24,6 @@
     "gulp-useref": "^3.0.0",
     "psi": "^2.0.2",
     "run-sequence": "^1.0.1",
-    "sw-precache": "^3.2.0",
     "sw-toolbox": "^3.0.1"
   },
   "engines": {

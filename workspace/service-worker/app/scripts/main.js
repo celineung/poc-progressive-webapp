@@ -2,73 +2,18 @@
 (function() {
   'use strict';
 
-  // TODO add service worker code here
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker
-             .register('./service-worker.js')
-             .then(function() { console.log('Service Worker Registered'); });
-  }
-
   // Your custom JavaScript goes here
   var app = {
-    visibleCards: [],
+    visibleCards: {},
     container: document.querySelector('.main'),
     cardTemplate: document.querySelector('.news-card-template'),
     dateContainer: document.querySelector('.date-container')
   };
   var dateOptions = {
-    year: "numeric", 
-    month: "long", 
+    year: "numeric",
+    month: "long",
     day: "numeric"
   };
-
-  /*
-   * 
-   */
-  app.getNews = function() {
-    var statement = "select * from rss where url='http://news.yahoo.com/rss/topstories' order by pubDate desc limit 2";
-    var url = "https://query.yahooapis.com/v1/public/yql?format=json&q=" + statement;
-    
-    //send request to get the data
-    var request = new XMLHttpRequest();
-    request.onreadystatechange = function() {
-      if (request.readyState === XMLHttpRequest.DONE) {
-        if (request.status === 200) {
-          var response = JSON.parse(request.response);
-          var results = response.query.results;
-          // results = initialNews;
-          results.created = response.query.created;
-          app.visibleCards = [];
-          app.dateContainer.querySelector('.date-last-refresh').textContent = (new Date(results.created)).toLocaleDateString("en-GB", dateOptions);
-          app.updateNewsCards(results.item[0]);
-          app.updateNewsCards(results.item[1]);
-          console.log(results);
-        }
-      } else {
-        // Return the initial weather forecast since no data is available.
-        //app.updateNewsCards(initialNews.item[0]);
-        //app.updateNewsCards(initialNews.item[1]);
-      }
-    };
-    request.open('GET', url);
-    request.send();
-
-  };
-  app.getNews();
-
-  app.updateNewsCards = function(data) {
-    var card = app.cardTemplate.cloneNode(true);
-    card.classList.remove('card-template');
-    card.querySelector('.news-title').textContent = data.title;
-    card.querySelector('.news-description').innerHTML = data.description;
-    card.querySelector('.news-read-more').innerHTML = "<a href='" + data.link + "'>READ MORE</a>" ;
-    card.querySelector('.news-date').textContent = (new Date(data.pubDate)).toLocaleDateString("en-GB", dateOptions);
-    card.removeAttribute('hidden');
-    console.log(card);
-    card.style.display = "block";
-    app.container.appendChild(card);
-    
-  }
 
   var initialNews = {
     "item": [
@@ -104,9 +49,73 @@
       }
     ],
     "created": "2016-10-12T21:23:32Z"
+  };
+
+  /*
+   *
+   */
+  document.getElementById('refresh-button').addEventListener('click', function() {
+    app.getNews();
+  });
+
+  app.updateNewsCards = function(data, index) {
+    var card = app.visibleCards[index];
+    if (card === undefined) {
+      card = app.cardTemplate.cloneNode(true);
+      app.container.appendChild(card);
+      app.visibleCards[index] = card;
+    }
+    card.classList.remove('card-template');
+    card.querySelector('.news-title').textContent = data.item[index].title;
+    card.querySelector('.news-description').innerHTML = data.item[index].description;
+    card.querySelector('.news-read-more').innerHTML = "<a href='" + data.item[index].link + "'>READ MORE</a>" ;
+    card.querySelector('.news-date').textContent = (new Date(data.item[index].pubDate)).toLocaleDateString("en-GB", dateOptions);
+    card.removeAttribute('hidden');
+    card.style.display = "block";
+    debugger;
+  };
+
+  /*
+   *
+   */
+  app.getNews = function() {
+    var statement = "select * from rss where url='http://news.yahoo.com/rss/topstories' order by pubDate desc limit 2";
+    var url = "https://query.yahooapis.com/v1/public/yql?format=json&q=" + statement;
+
+    //send request to get the data
+    var request = new XMLHttpRequest();
+    request.onreadystatechange = function() {
+      if (request.readyState === XMLHttpRequest.DONE) {
+        if (request.status === 200) {
+          debugger;
+          var response = JSON.parse(request.response);
+          var results = response.query.results;
+          results.created = response.query.created;
+          app.dateContainer.querySelector('.date-last-refresh').textContent = (new Date(results.created)).toLocaleDateString("en-GB", dateOptions);
+          app.updateNewsCards(results, 0);
+          app.updateNewsCards(results, 1);
+        }
+      } else {
+        // Return the initial news data
+        console.log("initialNews");
+        console.log(initialNews);
+        app.dateContainer.querySelector('.date-last-refresh').textContent = (new Date(initialNews.created)).toLocaleDateString("en-GB", dateOptions);
+        app.updateNewsCards(initialNews, 0);
+        app.updateNewsCards(initialNews, 1);
+      }
+    };
+    request.open('GET', url + ((/\?/).test(url) ? "&" : "?") + (new Date()).getTime());
+    request.send();
+
+  };
+  app.getNews();
+
+  // TODO add service worker code here
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+      .register('./service-worker.js')
+      .then(function() { console.log('Service Worker Registered'); });
   }
-
-
 
 })();
 

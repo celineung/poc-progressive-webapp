@@ -25,6 +25,16 @@
   /*
    * 
    */
+  document.getElementById('refresh-button').addEventListener('click', function() {
+    while (app.container.childNodes.length > 1) {
+      app.container.removeChild(app.container.lastChild);
+    }
+    app.getNews();
+  });
+
+  /*
+   * 
+   */
   app.getNews = function() {
     var statement = "select * from rss where url='http://news.yahoo.com/rss/topstories' order by pubDate desc limit 2";
     var url = "https://query.yahooapis.com/v1/public/yql?format=json&q=" + statement;
@@ -42,12 +52,9 @@
           app.dateContainer.querySelector('.date-last-refresh').textContent = (new Date(results.created)).toLocaleDateString("en-GB", dateOptions);
           app.updateNewsCards(results.item[0]);
           app.updateNewsCards(results.item[1]);
-          console.log(results);
         }
       } else {
-        // Return the initial weather forecast since no data is available.
-        //app.updateNewsCards(initialNews.item[0]);
-        //app.updateNewsCards(initialNews.item[1]);
+
       }
     };
     request.open('GET', url);
@@ -64,7 +71,6 @@
     card.querySelector('.news-read-more').innerHTML = "<a href='" + data.link + "'>READ MORE</a>" ;
     card.querySelector('.news-date').textContent = (new Date(data.pubDate)).toLocaleDateString("en-GB", dateOptions);
     card.removeAttribute('hidden');
-    console.log(card);
     card.style.display = "block";
     app.container.appendChild(card);
     

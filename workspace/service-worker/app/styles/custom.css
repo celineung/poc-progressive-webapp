@@ -19,7 +19,7 @@
 	font-weight: 500;
 }
 
-.refresh .mdl-button.mdl-button--fab.refresh-button {
+.refresh .mdl-button.mdl-button--fab#refresh-button {
 	margin: 10px 0px 10px 50px;
 }
 

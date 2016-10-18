@@ -1,4 +1,5 @@
-var cacheName = "appFiles";
+var appShellCacheName = "appFiles";
+var dataCacheName = "dataFiles";
 var filesToCache = [
 	"/",
 	"/index.html",
@@ -15,7 +16,7 @@ var filesToCache = [
 self.addEventListener("install", function(e) {
   console.log("[ServiceWorker] Install");
   e.waitUntil(
-    caches.open(cacheName).then(function(cache) {
+    caches.open(appShellCacheName).then(function(cache) {
       return cache.addAll(filesToCache);
     })
   );
@@ -29,7 +30,7 @@ self.addEventListener("activate", function(e) {
   e.waitUntil(
     caches.keys().then(function(keyList) {
       return Promise.all(keyList.map(function(key) {
-        if (key !== cacheName) {
+        if (key !== appShellCacheName && key !== dataCacheName) {
           console.log("[ServiceWorker] Removing old cache", key);
           return caches.delete(key);
         }
@@ -38,12 +39,31 @@ self.addEventListener("activate", function(e) {
   );
 });
 
+/*
+ * Ici on joue le rôle proxy
+ */
 self.addEventListener("fetch", function(e) {
   console.log("[ServiceWorker] Fetch", e.request.url);
-  e.respondWith(
-    caches.match(e.request).then(function(response) {
-      return response || fetch(e.request);
-    })
-  );
-});
+  var dataUrl = "https://query.yahooapis.com/v1/public/yql";
 
+  if (e.request.url.indexOf(dataUrl) > -1) {
+    //si l'on demande dataUrl, adopter la stratégie "Cache then network"
+    e.respondWith(
+      caches.open(dataCacheName).then(function(cache) {
+        return fetch(e.request).then(function(response){
+          cache.put(e.request.url, response.clone());
+          return response;
+        });
+      })
+    );
+  }
+  else {
+    //sinon on demande des fichiers app-shell
+    e.respondWith(
+      caches.match(e.request).then(function(response) {
+        return response || fetch(e.request);
+      })
+    );
+  }
+
+});

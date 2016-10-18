@@ -85,3 +85,30 @@ to do schéma
 1. enregistrer un service worker
 2. charger les fichiers nécéssaires au app shell
 3. charger le app-shell depuis le cache
+
+---
+
+## [TP] Service worker
+
+> **objectif:** réduire le temps de chargement des données
+
+1. créer la variable dataCacheName
+2. ajouter une condition pour ne pas supprimer les données de dataCacheName
+3. récupérer les données de *yahooapis* puis les mettre dans dataCacheName
+4. charger les données de dataCacheName
+
+
+
+## 1. créer la variable dataCacheName qui contiendra le nom du nouveau cache
+
+
+
+## 2. dans le "activate" du service-worker, ajouter la condition pour ne pas supprimer les données de dataCacheName
+
+
+
+## 3. dans le "fetch" du service-worker, *fetch* les données récupérées de *yahooapis* puis les mettre dans dataCacheName
+
+
+
+## 4. dans app.getNews(), charger les données de dataCacheName

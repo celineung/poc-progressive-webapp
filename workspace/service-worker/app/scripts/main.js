@@ -82,6 +82,21 @@
     var statement = "select * from rss where url='http://news.yahoo.com/rss/topstories' order by pubDate desc limit 2";
     var url = "https://query.yahooapis.com/v1/public/yql?format=json&q=" + statement;
 
+    if ('caches' in window) {
+      //si le service worker a enregistré un cache, afficher les données cachées
+      caches.match(url).then(function(response) {
+        if (response) {
+          response.json().then(function updateFromCache(json) {
+            var results = json.query.results;
+            results.key = key;
+            results.label = label;
+            results.created = json.query.created;
+            app.updateForecastCard(results);
+          });
+        }
+      });
+    }
+
     //send request to get the data
     var request = new XMLHttpRequest();
     request.onreadystatechange = function() {

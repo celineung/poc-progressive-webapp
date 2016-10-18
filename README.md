@@ -4,4 +4,4 @@ This project is a hands-on progressive webapp.
 It contains the following folders:
 
 - **slides** : contains description about progressive web app 
-- **news-app** : contains code for building a progressive web app
+- **workspace** : contains code for building a progressive web app

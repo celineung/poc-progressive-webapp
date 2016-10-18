@@ -52,7 +52,7 @@
 
 ## [TP] app shell
 
-> **objectif**: injecter les données de news
+> **objectif:** injecter les données de news
 
 ---
 
@@ -65,6 +65,12 @@
 
 ---
 
+## Service worker : introduction
+
+![Service worker](images/service-worker.png)
+
+---
+
 ## Service worker : cycle de vie
 
 
@@ -74,7 +80,7 @@ to do schéma
 
 ## [TP] Service worker
 
-> **objectif**: réduire le temps de chargement du app-shell
+> **objectif:** réduire le temps de chargement du app-shell
 
 1. enregistrer un service worker
 2. charger les fichiers nécéssaires au app shell

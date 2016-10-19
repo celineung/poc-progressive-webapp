@@ -44,7 +44,7 @@ self.addEventListener("activate", function(e) {
  */
 self.addEventListener("fetch", function(e) {
   console.log("[ServiceWorker] Fetch", e.request.url);
-  var dataUrl = "https://query.yahooapis.com/v1/public/yql";
+  var dataUrl = "https://newsapi.org/v1/articles";
 
   if (e.request.url.indexOf(dataUrl) > -1) {
     //si l'on demande dataUrl, adopter la stratégie "Cache then network"

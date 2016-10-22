@@ -1,7 +1,7 @@
 
 (function() {
   'use strict';
-  
+
   var app = {
     visibleCards: {},
     container: document.querySelector('.main'),
@@ -54,10 +54,8 @@
   pushButton.addEventListener('click', function() {
     pushNotification.notificationOn = !pushNotification.notificationOn;
     if(pushNotification.notificationOn) {
+      pushButton.innerHTML = "<i class='material-icons'>notifications</i>";
       pushNotification.subscribe();
-    }
-    else {
-      document.getElementById('activate-push-notification').innerHTML = "<i class='material-icons'>notifications_off</i>";
     }
   });
 
@@ -123,12 +121,7 @@
     navigator.serviceWorker.ready.then(function (serviceWorkerRegistration) {
       serviceWorkerRegistration.pushManager.subscribe({userVisibleOnly: true})
         .then(function (subscription) {
-          debugger;
           // The subscription was successful
-          pushButton.innerHTML = "<i class='material-icons'>notifications</i>";
-          // TODO: Send the subscription.endpoint to your server
-          // and save it to send a push message at a later date
-          // return sendSubscriptionToServer(subscription);
         })
         .catch(function (e) {
           if (Notification.permission === 'denied') {
@@ -137,14 +130,11 @@
             // to manually change the notification permission to
             // subscribe to push messages
             console.warn('Permission for Notifications was denied');
-            pushButton.disabled = true;
           } else {
             // A problem occurred with the subscription; common reasons
             // include network errors, and lacking gcm_sender_id and/or
             // gcm_user_visible_only in the manifest.
             console.error('Unable to subscribe to push.', e);
-            pushButton.disabled = false;
-            pushButton.textContent = 'Enable Push Messages';
           }
         });
     });

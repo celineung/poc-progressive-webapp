@@ -16,6 +16,8 @@ var filesToCache = [
 self.addEventListener("install", function(e) {
   console.log("[ServiceWorker] Install");
   e.waitUntil(
+    //ouvrir le cache et cacher les fichiers
+    //attention: si un chargement des fichiers se termine en erreur, c'est toute l'étape "install" du service worker qui tombe en erreur
     caches.open(appShellCacheName).then(function(cache) {
       return cache.addAll(filesToCache);
     })
@@ -68,6 +70,9 @@ self.addEventListener("fetch", function(e) {
 
 });
 
+/*
+ * Afficher le message push
+ */
 self.addEventListener('push', function(event) {
   var title = "Subscription to push notification";
   var body = "SUCCESS";

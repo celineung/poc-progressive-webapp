@@ -73,8 +73,7 @@
 
 ## Service worker : cycle de vie
 
-
-to do schéma
+![Service worker life cycle](images/service-worker-life.png)
 
 ---
 
@@ -112,3 +111,19 @@ to do schéma
 
 
 ## 4. dans app.getNews(), charger les données de dataCacheName
+
+---
+
+## Ajouter le site web au homescreen
+
+- être accessible directement depuis le homescreen
+- pas besoin de passer par le app store
+- full-screen (pas de barre URL)
+
+---
+
+## Notifications push
+
+- nécéssite un service worker
+- enregistrement aux notifications en utilisant **PushManager.subscribe()**
+- listener **onpush** écoutent les messages push

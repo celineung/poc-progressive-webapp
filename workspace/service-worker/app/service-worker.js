@@ -67,3 +67,13 @@ self.addEventListener("fetch", function(e) {
   }
 
 });
+
+self.addEventListener('push', function(event) {
+  var title = "Subscription to push notification";
+  var body = "SUCCESS";
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: body
+    })
+  );
+});

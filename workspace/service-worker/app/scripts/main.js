@@ -1,8 +1,7 @@
 
 (function() {
   'use strict';
-
-  // Your custom JavaScript goes here
+  
   var app = {
     visibleCards: {},
     container: document.querySelector('.main'),
@@ -39,11 +38,27 @@
     ]
   };
 
+  var pushButton = document.getElementById('activate-push-notification');
+  var refreshButton = document.getElementById('refresh-button');
+  var pushNotification = {
+    notificationOn : false,
+    subscribe: subscribeToPushNotification
+  } ;
+
   /*
    *
    */
-  document.getElementById('refresh-button').addEventListener('click', function() {
+  refreshButton.addEventListener('click', function() {
     app.getNews();
+  });
+  pushButton.addEventListener('click', function() {
+    pushNotification.notificationOn = !pushNotification.notificationOn;
+    if(pushNotification.notificationOn) {
+      pushNotification.subscribe();
+    }
+    else {
+      document.getElementById('activate-push-notification').innerHTML = "<i class='material-icons'>notifications_off</i>";
+    }
   });
 
   app.updateNewsCards = function(data, index) {
@@ -102,14 +117,50 @@
     request.send();
 
   };
-  app.getNews();
 
-  // TODO add service worker code here
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker
-      .register('./service-worker.js')
-      .then(function() { console.log('Service Worker Registered'); });
+
+  function subscribeToPushNotification() {
+    navigator.serviceWorker.ready.then(function (serviceWorkerRegistration) {
+      serviceWorkerRegistration.pushManager.subscribe({userVisibleOnly: true})
+        .then(function (subscription) {
+          debugger;
+          // The subscription was successful
+          pushButton.innerHTML = "<i class='material-icons'>notifications</i>";
+          // TODO: Send the subscription.endpoint to your server
+          // and save it to send a push message at a later date
+          // return sendSubscriptionToServer(subscription);
+        })
+        .catch(function (e) {
+          if (Notification.permission === 'denied') {
+            // The user denied the notification permission which
+            // means we failed to subscribe and the user will need
+            // to manually change the notification permission to
+            // subscribe to push messages
+            console.warn('Permission for Notifications was denied');
+            pushButton.disabled = true;
+          } else {
+            // A problem occurred with the subscription; common reasons
+            // include network errors, and lacking gcm_sender_id and/or
+            // gcm_user_visible_only in the manifest.
+            console.error('Unable to subscribe to push.', e);
+            pushButton.disabled = false;
+            pushButton.textContent = 'Enable Push Messages';
+          }
+        });
+    });
   }
+
+  function init() {
+    app.getNews();
+
+    // TODO add service worker code here
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('./service-worker.js')
+        .then(function() { console.log('Service Worker Registered'); });
+    }
+  }
+  init();
 
 })();
 

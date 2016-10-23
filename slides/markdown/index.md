@@ -119,6 +119,37 @@
 - être accessible directement depuis le homescreen
 - pas besoin de passer par le app store
 - full-screen (pas de barre URL)
+- requiert manifest.json
+
+Notes:
+- On mobile, only Chrome and Opera Mobile supports manifest
+- manifest fournit des informations concernant celle-ci (comme son nom, son auteur, une icône et une description)
+- un écran de lancement (splashscreen) est affiché pour une appplication lancée depuis l'écran d'accueil.
+Cet écran est généré automatiquement en utilisant les propriétés du manifeste de l'application web, particulièrement:
+name, background_color, et l'icône du tableau `icons`qui est la plus proche de 128dp pour l'appareil.
+- améliorer l'expérience utilisateur pendant le chargement de l'application (peut définir le background-color par exemple)
+
+---
+
+## [TP] Web app dans la homepage
+
+> **objectif:** raccéder à la webapp depuis la homepage du téléphone
+
+1. Ajouter la dépendance au manifest.json dans le index.html
+2. Ajouter le site au homescreen
+3. Tester le mode offline
+
+Notes:
+Erreur en offline car le site n'est pas désservi en HTTPS
+Service workers are only available to "secure origins" (HTTPS sites, basically)
+
+
+
+## Détails sur tous vos services workers
+
+```
+chrome://serviceworker-internals/
+```
 
 ---
 
@@ -127,3 +158,12 @@
 - nécéssite un service worker
 - enregistrement aux notifications en utilisant **PushManager.subscribe()**
 - listener **onpush** écoutent les messages push
+
+---
+
+## [TP] Notification push
+
+> **objectif:** recevoir une notification push
+
+1. Ajouter l'event listener onpush dans le service worker
+2. Implémenter la fonction *subscribeToPushNotification()* qui va s'abonner à un serveur de notifications

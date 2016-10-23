@@ -46,11 +46,15 @@
   } ;
 
   /*
-   *
+   * Demande de rafraichissement des news
    */
   refreshButton.addEventListener('click', function() {
     app.getNews();
   });
+
+  /*
+   * Activer les notifications push
+   */
   pushButton.addEventListener('click', function() {
     pushNotification.notificationOn = !pushNotification.notificationOn;
     if(pushNotification.notificationOn) {
@@ -59,6 +63,9 @@
     }
   });
 
+  /*
+   * Afficher les données de news à l'écran
+   */
   app.updateNewsCards = function(data, index) {
     var card = app.visibleCards[index];
     if (card === undefined) {
@@ -76,7 +83,7 @@
   };
 
   /*
-   *
+   * Récupérer les données de news
    */
   app.getNews = function() {
     var url = "https://newsapi.org/v1/articles?source=bbc-news&sortBy=top&apiKey=2890d006806f42309bbf7f6b93cc57aa";
@@ -94,7 +101,7 @@
       });
     }
 
-    //send request to get the data
+    //envoyer la requête pour récupérer les données
     var request = new XMLHttpRequest();
     request.onreadystatechange = function() {
       if (request.readyState === XMLHttpRequest.DONE) {
@@ -105,7 +112,7 @@
           app.updateNewsCards(response, 1);
         }
       } else {
-        // Return the initial news data
+        //renvoyer les données de news par défaut
         app.dateContainer.querySelector('.date-last-refresh').textContent = (new Date(initialNews.articles[0].publishedAt)).toLocaleDateString("en-GB", dateOptions);
           app.updateNewsCards(initialNews, 0);
         app.updateNewsCards(initialNews, 1);
@@ -117,33 +124,35 @@
   };
 
 
+  /*
+   * S'abonner aux notifications push
+   */
   function subscribeToPushNotification() {
     navigator.serviceWorker.ready.then(function (serviceWorkerRegistration) {
+      //{userVisibleOnly: true} : les messages push sont toujours visibles
       serviceWorkerRegistration.pushManager.subscribe({userVisibleOnly: true})
         .then(function (subscription) {
-          // The subscription was successful
+          //success
         })
         .catch(function (e) {
           if (Notification.permission === 'denied') {
-            // The user denied the notification permission which
-            // means we failed to subscribe and the user will need
-            // to manually change the notification permission to
-            // subscribe to push messages
+            // l'utilisateur n'a pas voulu activer les messages push
             console.warn('Permission for Notifications was denied');
           } else {
-            // A problem occurred with the subscription; common reasons
-            // include network errors, and lacking gcm_sender_id and/or
-            // gcm_user_visible_only in the manifest.
+            // erreur
+            // problème réseau? pas de gcm_sender_id dans le manifest.json?
             console.error('Unable to subscribe to push.', e);
           }
         });
     });
   }
 
+  /*
+   * Initialisation de la page
+   */
   function init() {
     app.getNews();
 
-    // TODO add service worker code here
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('./service-worker.js')

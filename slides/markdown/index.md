@@ -1,14 +1,39 @@
 ##  Progressive Web Apps
 <!-- .slide:data-background="images/applications.png" height="100%" -->
 
-### Sensibilisation UX pour les développeurs
+### Un nouveau mode de développement mobile
 <!-- .element: style="color: #cc5f7f;" -->
 
 27/10/2016 - Olivier Laporte & Céline Ung
 
 ---
 
-## Problèmes Web Apps *on browser*
+## Les développement mobile aujourd'hui
+
+<blockquote class="fragment fixed" data-fragment-index="1"  data-transition="slide">
+NATIF
+</blockquote>
+
+<blockquote class="fragment fixed" data-fragment-index="2"  data-transition="slide">
+HTML
+</blockquote>
+
+<blockquote class="fragment fixed" data-fragment-index="3"  data-transition="slide">
+HYBRIDE
+</blockquote>
+
+Notes:
+Natif
++ accès au fonctionalité du téléphone
+- à faire pour chaque OS
+HTML
+- accès à rien
+HYBRIDE
++ mélange des deux
+
+---
+
+## Les problèmes
 
 <blockquote class="fragment fixed" data-fragment-index="1"  data-transition="slide">
 "Ah je suis dans le métro, je n'ai pas de réseau pour récupérer le numéro de téléphone."
@@ -22,12 +47,6 @@
 "L'application mobile est vachement mieux."
 </blockquote>
 
----
-
-## Ce dont nous avons besoin
-
-> “Use modern web capabilities to deliver an app-like user experience.”
-
 --- 
 
 ## Ce dont nous avons besoin
@@ -38,8 +57,11 @@
 - **safe** : utiliser HTTPS
 - **installable** : possibilité de rajouter l'application sur l'écran d'accueil
 
-> \# progressive web app \#
+> “Use modern web capabilities to deliver an app-like user experience.”
 <!-- .element: class="fragment" data-fragment-index="1" -->
+
+Notes:
+PWA permet de travailler pour obtenir une meilleure expérience utilisateur
 
 ---
 
@@ -54,20 +76,34 @@
 
 > **objectif:** injecter les données de news
 
+Notes:
+On veut proposer à l'utilisateur le plus rapidement possible une coquille du site, pour que l'utilisateur voit une information.
+Ensuite en javascript, on va charger davantage d'info.
+
 ---
 
 ## Service worker : introduction
 
-- permet de rendre l'application web disponible offline
-- script chargé en parallèle des scripts de notre application
-- joue le rôle de proxy
-- utiliser HTTPS
+- joue le rôle de **proxy**
+- script chargé en **parallèle** des scripts de notre application
+- fonctionne en **HTTPS**
+- asynchrone, utilise des **promesses**
+
+Notes:
+Attention, pas accès au DOM
+Attention au scope
 
 ---
 
 ## Service worker : introduction
 
 ![Service worker](images/service-worker.png)
+
+---
+
+## Service worker : support
+
+![Service worker support](images/sw-support.png)
 
 ---
 
@@ -91,10 +127,10 @@
 
 > **objectif:** réduire le temps de chargement des données
 
-1. créer la variable dataCacheName
-2. ajouter une condition pour ne pas supprimer les données de dataCacheName
-3. récupérer les données de *yahooapis* puis les mettre dans dataCacheName
-4. charger les données de dataCacheName
+1. créer la variable *dataCacheName*
+2. ajouter une condition pour ne pas supprimer les données de *dataCacheName*
+3. récupérer les données de *yahooapis* puis les mettre dans *dataCacheName*
+4. charger les données de *dataCacheName*
 
 
 
@@ -119,7 +155,7 @@
 - être accessible directement depuis le homescreen
 - pas besoin de passer par le app store
 - full-screen (pas de barre URL)
-- requiert manifest.json
+- requiert service-worker et manifest.json
 
 Notes:
 - On mobile, only Chrome and Opera Mobile supports manifest
@@ -161,9 +197,19 @@ chrome://serviceworker-internals/
 
 ---
 
+## Notification push : support
+
+![Service worker support](images/sw-support.png)
+
+---
+
 ## [TP] Notification push
 
 > **objectif:** recevoir une notification push
 
 1. Ajouter l'event listener onpush dans le service worker
 2. Implémenter la fonction *subscribeToPushNotification()* qui va s'abonner à un serveur de notifications
+
+---
+
+# MERCI =)

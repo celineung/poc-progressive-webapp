@@ -3,19 +3,23 @@
 	background: url('../images/news-icon.png') center / cover;
 }
 
+.mdl-header .mdl-layout__header-row {
+  position: relative;
+}
+
 .mdl-header  .mdl-card__title {
 	height: 30px;
 }
 
 .mdl-header  .mdl-card__actions {
-	height: 52px; 
-	padding: 16px; 
+	height: 52px;
+	padding: 16px;
 	background: rgba(0, 0, 0, 0.2);
 }
 
 .mdl-header .mdl-card__actions > span {
-	color: #fff; 
-	font-size: 14px; 
+	color: #fff;
+	font-size: 14px;
 	font-weight: 500;
 }
 
@@ -46,7 +50,7 @@
 .news-card-template .news-date {
 	color: rgb(0,150,136);
 	height: 36px;
-	padding: 0 16px; 
+	padding: 0 16px;
 	font-size: 14px;
 	text-transform: uppercase;
 	line-height: 36px;
@@ -54,5 +58,14 @@
 
 .news-card-template .news-read-more a {
 	text-decoration: none;
+}
+
+#activate-push-notification {
+  position: absolute;
+  right: 0;
+  color: #FFF;
+  margin-left: 10px;
+  background-color: transparent;
+  border: none;
 }
 

@@ -44,11 +44,15 @@
       <header class="mdl-layout__header">
         <div class="mdl-layout__header-row">
           <span class="mdl-layout-title">ZeNews</span>
+          <button id="activate-push-notification" class="mdl-button">
+            <i class="material-icons">notifications_off</i>
+          </button>
         </div>
+
       </header>
 
       <div class="refresh">
-        <button class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored" id="refresh-button">
+        <button id="refresh-button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored">
           <i class="material-icons">refresh</i>
         </button>
         <span class="date-container">last refreshed: <span class="date-last-refresh"></span></span>
@@ -63,7 +67,7 @@
               <div class="mdl-card__actions">
                 <span class="news-title"></span>
               </div>
-            </div>  
+            </div>
             <div class="mdl-card__supporting-text">
               <p class="news-description"></p>
               <strong class="news-read-more"></strong>
@@ -95,4 +99,4 @@
     </script>
     <!-- Built with love using Web Starter Kit -->
   </body>
-</html>   
+</html>

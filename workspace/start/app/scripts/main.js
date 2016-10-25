@@ -141,7 +141,7 @@
     // TODO enregistrer un service worker si supporté par le navigateur
 
   }
-  init();
+  //init();
 
 })();
 

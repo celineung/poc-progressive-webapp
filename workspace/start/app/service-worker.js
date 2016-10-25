@@ -13,61 +13,25 @@ var filesToCache = [
 /*
  * Durant cette étape, le app shell est caché
  */
-self.addEventListener("install", function(e) {
-  console.log("[ServiceWorker] Install");
-  e.waitUntil(
-    //ouvrir le cache et cacher les fichiers
-    //attention: si un chargement des fichiers se termine en erreur, c'est toute l'étape "install" du service worker qui tombe en erreur
-    caches.open(appShellCacheName).then(function(cache) {
-      return cache.addAll(filesToCache);
-    })
-  );
+self.addEventListener("install", function(event) {
+
+  // TODO mettre les fichiers statiques dans le cache
+
 });
 
 /*
- * Mettre à jour le cache lorsque l'un des fichiers du app-shell est modifié
+ * Activate
  */
-self.addEventListener("activate", function(e) {
+self.addEventListener("activate", function() {
   console.log("[ServiceWorker] Activate");
-  e.waitUntil(
-    caches.keys().then(function(keyList) {
-      return Promise.all(keyList.map(function(key) {
-        if (key !== appShellCacheName && key !== dataCacheName) {
-          console.log("[ServiceWorker] Removing old cache", key);
-          return caches.delete(key);
-        }
-      }));
-    })
-  );
 });
 
 /*
  * Ici on joue le rôle proxy
  */
-self.addEventListener("fetch", function(e) {
-  console.log("[ServiceWorker] Fetch", e.request.url);
-  var dataUrl = "https://newsapi.org/v1/articles";
+self.addEventListener("fetch", function(event) {
 
-  if (e.request.url.indexOf(dataUrl) > -1) {
-    //si l'on demande dataUrl, adopter la stratégie "Cache then network"
-    e.respondWith(
-      caches.open(dataCacheName).then(function(cache) {
-        return fetch(e.request).then(function(response){
-          //clone car une réponse ne peut être consommé que une seule fois
-          cache.put(e.request.url, response.clone());
-          return response;
-        });
-      })
-    );
-  }
-  else {
-    //sinon on demande des fichiers app-shell
-    e.respondWith(
-      caches.match(e.request).then(function(response) {
-        return response || fetch(e.request);
-      })
-    );
-  }
+  // TODO retourner les fichiers cachés quand ils sont cachés
 
 });
 
@@ -77,15 +41,9 @@ self.addEventListener("fetch", function(e) {
 self.addEventListener("push", function(event) {
   var title = "Subscription to push notification";
   var body = "HELLO, CLICK ON THE LINK BELOW FOR ANOTHER NEWS";
-  event.waitUntil(
-    self.registration.showNotification(title, {
-      body: body,
-      icon: "images/touch/icon-128x128.png",
-      actions: [
-        { action: "open", title: "READ"}
-      ]
-    })
-  );
+
+  // TODO: Construire la notification à afficher
+
 });
 
 /*

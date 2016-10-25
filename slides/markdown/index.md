@@ -74,7 +74,7 @@ PWA permet de travailler pour obtenir une meilleure expérience utilisateur
 
 ## [TP] app shell
 
-> **objectif:** injecter les données de news
+> **objectif:** avoir une webapp ready rapidement
 
 Notes:
 On veut proposer à l'utilisateur le plus rapidement possible une coquille du site, pour que l'utilisateur voit une information.
@@ -111,6 +111,11 @@ Attention au scope
 
 ![Service worker life cycle](images/service-worker-life.png)
 
+Notes:
+idle -> terminate to preserve memory and processor power
+sw redémarré automatiquement pour répondre à des events (onfetch par exemple)
+
+
 ---
 
 ## [TP] Service worker
@@ -118,8 +123,70 @@ Attention au scope
 > **objectif:** réduire le temps de chargement du app-shell
 
 1. enregistrer un service worker
-2. charger les fichiers nécéssaires au app shell
+2. charger les fichiers nécéssaires au app shell dans le cache
 3. charger le app-shell depuis le cache
+4. vérifier les données dans le cache et le fonctionnement offline
+
+
+
+## 1. enregistrer un service worker
+
+```
+if ('serviceWorker' in navigator) {
+   navigator.serviceWorker
+     .register('./service-worker.js')
+     .then(function() { console.log('[Service Worker] Registered'); });
+ }
+```
+
+
+
+## 2. charger les fichiers nécéssaires au app shell
+
+```
+self.addEventListener("install", function(event) {
+  console.log("[ServiceWorker] Install");
+  event.waitUntil(
+    //ouvrir le cache et cacher les fichiers
+    //attention: si un chargement des fichiers se termine en erreur,
+    //c'est toute l'étape "install" du service worker
+    //qui tombe en erreur
+    caches.open(appShellCacheName).then(function(cache) {
+      return cache.addAll(filesToCache);
+    })
+  );
+});
+```
+
+Notes:
+SW pas considéré comme installé avant que la promesse n'est pas résolue (waitUntil).
+
+
+
+## 3. charger le app-shell depuis le cache
+
+```
+self.addEventListener("fetch", function(event) {
+  console.log("[ServiceWorker] Fetch", event.request.url);
+  event.respondWith(
+    caches.match(event.request.url).then(function(response) {
+      return response || fetch(event.request);
+    })
+  );
+});
+```
+
+```
+chrome://serviceworker-internals/
+```
+<!-- .element: class="fragment" data-fragment-index="1" -->
+
+
+
+## 4. vérifier les données dans le cache et le fonctionnement offline
+
+Notes:
+Des news sont affichés car fallback initialNews
 
 ---
 
@@ -128,9 +195,9 @@ Attention au scope
 > **objectif:** réduire le temps de chargement des données
 
 1. créer la variable *dataCacheName*
-2. ajouter une condition pour ne pas supprimer les données de *dataCacheName*
-3. récupérer les données de *yahooapis* puis les mettre dans *dataCacheName*
-4. charger les données de *dataCacheName*
+2. intercepter la requête vers l'api et cacher la réponse
+3. charger les données de *dataCacheName*
+4. vérifier les données dans le cache et le fonctionnement offline
 
 
 
@@ -138,22 +205,68 @@ Attention au scope
 
 
 
-## 2. dans le "activate" du service-worker, ajouter la condition pour ne pas supprimer les données de dataCacheName
+## 2. intercepter la requête vers l'api et cacher la réponse
+
+```
+self.addEventListener("fetch", function(e) {
+  console.log("[ServiceWorker] Fetch", e.request.url);
+  var dataUrl = "https://newsapi.org/v1/articles";
+
+  if (e.request.url.indexOf(dataUrl) > -1) {
+    //si l'on demande dataUrl,
+    //adopter la stratégie "Cache then network"
+    e.respondWith(
+      caches.open(dataCacheName).then(function(cache) {
+        return fetch(e.request).then(function(response){
+          //clone car une réponse ne
+          //peut être consommé que une seule fois
+          cache.put(e.request.url, response.clone());
+          return response;
+        });
+      })
+    );
+  }
+  else {
+    //sinon on demande des fichiers app-shell
+    e.respondWith(
+      caches.match(e.request).then(function(response) {
+        return response || fetch(e.request);
+      })
+    );
+  }
+
+});
+```
 
 
 
-## 3. dans le "fetch" du service-worker, *fetch* les données récupérées de *yahooapis* puis les mettre dans dataCacheName
+## 3. dans app.getNews(), charger les données de dataCacheName
+
+```
+if ('caches' in window) {
+  // TODO: si le service worker a enregistré un cache,
+  // afficher les données cachées en appelant app.display()
+  caches.match(url).then(function(response) {
+    if (response) {
+      response.json().then(function(json) {
+        app.display(json);
+      });
+    }
+  });
+}`
+```
 
 
 
-## 4. dans app.getNews(), charger les données de dataCacheName
+## 4. vérifier les données dans le cache et le fonctionnement offline
+
 
 ---
 
 ## Ajouter le site web au homescreen
 
-- être accessible directement depuis le homescreen
 - pas besoin de passer par le app store
+- être accessible directement depuis le homescreen
 - full-screen (pas de barre URL)
 - requiert service-worker et manifest.json
 
@@ -181,11 +294,19 @@ Service workers are only available to "secure origins" (HTTPS sites, basically)
 
 
 
-## Détails sur tous vos services workers
+## 1. Ajouter la dépendance au manifest.json dans le index.html
 
 ```
-chrome://serviceworker-internals/
+<link rel="manifest" href="manifest.json">
 ```
+
+
+
+## 2. Ajouter le site au homescreen
+
+
+
+## 3. Tester le mode offline
 
 ---
 
@@ -199,7 +320,7 @@ chrome://serviceworker-internals/
 
 ## Notification push : support
 
-![Service worker support](images/sw-support.png)
+![Service worker support](images/push-support.png)
 
 ---
 
@@ -209,6 +330,40 @@ chrome://serviceworker-internals/
 
 1. Ajouter l'event listener onpush dans le service worker
 2. Implémenter la fonction *subscribeToPushNotification()* qui va s'abonner à un serveur de notifications
+
+
+
+## 1. Ajouter l'event listener onpush dans le service worker
+
+```
+self.addEventListener("push", function(event) {
+  var title = "Subscription to push notification";
+  var body = "HELLO, CLICK ON THE LINK BELOW FOR ANOTHER NEWS";
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: body,
+      icon: "images/touch/icon-128x128.png",
+      actions: [
+        { action: "open", title: "READ"}
+      ]
+    })
+  );
+});
+```
+
+
+
+## 2. S'abonner à un serveur de notifications
+
+```
+function subscribeToPushNotification() {
+    navigator.serviceWorker.ready.then(function (serviceWorkerRegistration) {
+      //{userVisibleOnly: true} : les messages push sont toujours visibles
+      serviceWorkerRegistration.pushManager.subscribe({userVisibleOnly: true});
+    });
+}
+```
+
 
 ---
 

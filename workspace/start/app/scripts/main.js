@@ -8,6 +8,7 @@
     cardTemplate: document.querySelector('.news-card-template'),
     dateContainer: document.querySelector('.date-container')
   };
+
   var dateOptions = {
     year: "numeric",
     month: "long",
@@ -64,7 +65,7 @@
   });
 
   /*
-   * Afficher les données de news à l'écran
+   * Remplir une carte de news à l'écran
    */
   app.updateNewsCards = function(data, index) {
     var card = app.visibleCards[index];
@@ -86,19 +87,13 @@
    * Récupérer les données de news
    */
   app.getNews = function() {
-    var url = "https://newsapi.org/v1/articles?source=bbc-news&sortBy=top&apiKey=2890d006806f42309bbf7f6b93cc57aa";
+    var url = "https://newsapi.org/v1/articles?source=the-wall-street-journal&sortBy=top&apiKey=1a662c680d304e46845ff52028bb644c";
 
     if ('caches' in window) {
-      //si le service worker a enregistré un cache, afficher les données cachées
-      caches.match(url).then(function(response) {
-        if (response) {
-          response.json().then(function updateFromCache(json) {
-            app.dateContainer.querySelector('.date-last-refresh').textContent = (new Date(json.articles[0].publishedAt)).toLocaleDateString("en-GB", dateOptions);
-            app.updateNewsCards(json, 0);
-            app.updateNewsCards(json, 1);
-          });
-        }
-      });
+
+      // TODO: si le service worker a enregistré un cache,
+      // afficher les données cachées en appelant app.display()
+
     }
 
     //envoyer la requête pour récupérer les données
@@ -107,15 +102,11 @@
       if (request.readyState === XMLHttpRequest.DONE) {
         if (request.status === 200) {
           var response = JSON.parse(request.response);
-          app.dateContainer.querySelector('.date-last-refresh').textContent = (new Date()).toLocaleDateString("en-GB", dateOptions);
-          app.updateNewsCards(response, 0);
-          app.updateNewsCards(response, 1);
+          app.display(response);
         }
       } else {
         //renvoyer les données de news par défaut
-        app.dateContainer.querySelector('.date-last-refresh').textContent = (new Date(initialNews.articles[0].publishedAt)).toLocaleDateString("en-GB", dateOptions);
-          app.updateNewsCards(initialNews, 0);
-        app.updateNewsCards(initialNews, 1);
+        app.display(initialNews);
       }
     };
     request.open('GET', url);
@@ -123,28 +114,22 @@
 
   };
 
+  /*
+   * Afficher les données à l'écran
+   */
+  app.display = function(data) {
+    app.dateContainer.querySelector('.date-last-refresh').textContent = (new Date(data.articles[0].publishedAt)).toLocaleDateString("en-GB", dateOptions);
+    app.updateNewsCards(data, 0);
+    app.updateNewsCards(data, 1);
+  };
 
   /*
    * S'abonner aux notifications push
    */
   function subscribeToPushNotification() {
-    navigator.serviceWorker.ready.then(function (serviceWorkerRegistration) {
-      //{userVisibleOnly: true} : les messages push sont toujours visibles
-      serviceWorkerRegistration.pushManager.subscribe({userVisibleOnly: true})
-        .then(function (subscription) {
-          //success
-        })
-        .catch(function (e) {
-          if (Notification.permission === 'denied') {
-            // l'utilisateur n'a pas voulu activer les messages push
-            console.warn('Permission for Notifications was denied');
-          } else {
-            // erreur
-            // problème réseau? pas de gcm_sender_id dans le manifest.json?
-            console.error('Unable to subscribe to push.', e);
-          }
-        });
-    });
+
+    // TODO: s'abonner aux notification push
+
   }
 
   /*
@@ -153,11 +138,8 @@
   function init() {
     app.getNews();
 
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('./service-worker.js')
-        .then(function() { console.log('Service Worker Registered'); });
-    }
+    // TODO enregistrer un service worker si supporté par le navigateur
+
   }
   init();
 

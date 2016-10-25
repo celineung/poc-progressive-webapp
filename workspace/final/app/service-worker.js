@@ -13,11 +13,13 @@ var filesToCache = [
 /*
  * Durant cette étape, le app shell est caché
  */
-self.addEventListener("install", function(e) {
+self.addEventListener("install", function(event) {
   console.log("[ServiceWorker] Install");
-  e.waitUntil(
+  event.waitUntil(
     //ouvrir le cache et cacher les fichiers
-    //attention: si un chargement des fichiers se termine en erreur, c'est toute l'étape "install" du service worker qui tombe en erreur
+    //attention: si un chargement des fichiers se termine en erreur,
+    //c'est toute l'étape "install" du service worker
+    //qui tombe en erreur
     caches.open(appShellCacheName).then(function(cache) {
       return cache.addAll(filesToCache);
     })
@@ -25,11 +27,11 @@ self.addEventListener("install", function(e) {
 });
 
 /*
- * Mettre à jour le cache lorsque l'un des fichiers du app-shell est modifié
+ * Supprimer les anciens caches
  */
-self.addEventListener("activate", function(e) {
+self.addEventListener("activate", function(event) {
   console.log("[ServiceWorker] Activate");
-  e.waitUntil(
+  event.waitUntil(
     caches.keys().then(function(keyList) {
       return Promise.all(keyList.map(function(key) {
         if (key !== appShellCacheName && key !== dataCacheName) {

@@ -6,7 +6,7 @@
     visibleCards: {},
     container: document.querySelector('.main'),
     cardTemplate: document.querySelector('.news-card-template'),
-    dateContainer: document.querySelector('.date-container')
+    dateContainer: document.querySelector('.date-container'),
   };
   var dateOptions = {
     year: "numeric",
@@ -64,7 +64,7 @@
   });
 
   /*
-   * Afficher les données de news à l'écran
+   * Remplir une carte de news à l'écran
    */
   app.updateNewsCards = function(data, index) {
     var card = app.visibleCards[index];
@@ -93,9 +93,7 @@
       caches.match(url).then(function(response) {
         if (response) {
           response.json().then(function updateFromCache(json) {
-            app.dateContainer.querySelector('.date-last-refresh').textContent = (new Date(json.articles[0].publishedAt)).toLocaleDateString("en-GB", dateOptions);
-            app.updateNewsCards(json, 0);
-            app.updateNewsCards(json, 1);
+            app.display(json);
           });
         }
       });
@@ -107,15 +105,11 @@
       if (request.readyState === XMLHttpRequest.DONE) {
         if (request.status === 200) {
           var response = JSON.parse(request.response);
-          app.dateContainer.querySelector('.date-last-refresh').textContent = (new Date()).toLocaleDateString("en-GB", dateOptions);
-          app.updateNewsCards(response, 0);
-          app.updateNewsCards(response, 1);
+          app.display(response);
         }
       } else {
         //renvoyer les données de news par défaut
-        app.dateContainer.querySelector('.date-last-refresh').textContent = (new Date(initialNews.articles[0].publishedAt)).toLocaleDateString("en-GB", dateOptions);
-          app.updateNewsCards(initialNews, 0);
-        app.updateNewsCards(initialNews, 1);
+        app.display(initialNews);
       }
     };
     request.open('GET', url);
@@ -123,6 +117,14 @@
 
   };
 
+  /*
+   * Afficher les données à l'écran
+   */
+  app.display = function(data) {
+    app.dateContainer.querySelector('.date-last-refresh').textContent = (new Date(data.articles[0].publishedAt)).toLocaleDateString("en-GB", dateOptions);
+    app.updateNewsCards(data, 0);
+    app.updateNewsCards(data, 1);
+  };
 
   /*
    * S'abonner aux notifications push

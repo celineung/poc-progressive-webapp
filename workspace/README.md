@@ -2,9 +2,10 @@
 
 ## Organisation
 
-(not set yet)
-You can find different TP folders here, each one adding a layer to the web application.
-Resulting to the final TP folder *final*.
+You can find different TP folders here:
+
+- start: contains the code to start with the TP
+- final: contains the code for the final working progressive web app
 
 ## Built using:
 

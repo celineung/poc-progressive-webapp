@@ -8,7 +8,7 @@
 
 ---
 
-## Les développement mobile aujourd'hui
+## Les développements mobile aujourd'hui
 
 <blockquote class="fragment fixed" data-fragment-index="1"  data-transition="slide">
 NATIF
@@ -95,15 +95,15 @@ Attention au scope
 
 ---
 
-## Service worker : introduction
-
-![Service worker](images/service-worker.png)
-
----
-
 ## Service worker : support
 
 ![Service worker support](images/sw-support.png)
+
+---
+
+## Service worker : introduction
+
+![Service worker](images/service-worker.png)
 
 ---
 
